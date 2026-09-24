@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # Optional - only needed if backend/.env sets USE_REDIS=true, to let
+  # multiple backend replicas share Socket.IO room state (6.2 Scalability).
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  # Optional - a TURN server for peers behind restrictive NATs/firewalls
+  # (6.2 Scalability). Point backend/.env TURN_URL / frontend/.env
+  # REACT_APP_TURN_URL at turn:<host>:3478 once configured with real
+  # credentials below.
+  coturn:
+    image: coturn/coturn:latest
+    restart: unless-stopped
+    network_mode: host
+    command: >
+      -n --log-file=stdout
+      --realm=zoom-clone.local
+      --user=turnuser:turnpassword
+      --min-port=49160 --max-port=49200
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      # Mediasoup's RTC port range (must match MEDIASOUP_MIN_PORT/MAX_PORT in
+      # backend/.env). Every one of these needs to be published for real
+      # multi-host deployments, since each WebRTC transport binds a port
+      # from this range. For local single-host testing this range is large
+      # (10k ports) - narrow it in backend/.env if you don't need that much
+      # concurrent call capacity.
+      - "40000-49999:40000-49999/udp"
+      - "40000-49999:40000-49999/tcp"
+    env_file:
+      - ./backend/.env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/zoom-clone
+      - REDIS_URL=redis://redis:6379
+      # Set this to the Docker host's real reachable IP (not 127.0.0.1) for
+      # calls to work from anywhere other than the host machine itself.
+      - MEDIASOUP_ANNOUNCED_IP=${MEDIASOUP_ANNOUNCED_IP:-127.0.0.1}
+    depends_on:
+      - mongo
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_SERVER_URL: http://localhost:8000
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

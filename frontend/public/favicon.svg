@@ -1,0 +1,21 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="pulseGradientPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#06B6D4" />
+            <stop offset="50%" stop-color="#6366F1" />
+            <stop offset="100%" stop-color="#8B5CF6" />
+        </linearGradient>
+        <linearGradient id="pulseGradientAccent" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#10B981" />
+            <stop offset="100%" stop-color="#06B6D4" />
+        </linearGradient>
+    </defs>
+    <rect width="48" height="48" rx="12" fill="#0B0F19"/>
+    <path d="M24 6L39 15V33L24 42L9 33V15L24 6Z" stroke="url(#pulseGradientPrimary)" stroke-width="2.5" stroke-linejoin="round" fill="#0F172A" />
+    <rect x="15" y="21" width="2.8" height="6" rx="1.4" fill="url(#pulseGradientAccent)" />
+    <rect x="19.5" y="15" width="2.8" height="18" rx="1.4" fill="url(#pulseGradientPrimary)" />
+    <rect x="24" y="11" width="3.2" height="26" rx="1.6" fill="#06B6D4" />
+    <rect x="29" y="17" width="2.8" height="14" rx="1.4" fill="url(#pulseGradientPrimary)" />
+    <rect x="33.5" y="22" width="2.8" height="4" rx="1.4" fill="url(#pulseGradientAccent)" />
+    <circle cx="24" cy="24" r="2.2" fill="#FFFFFF" />
+</svg>
